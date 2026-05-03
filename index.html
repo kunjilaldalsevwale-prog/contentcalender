@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SocialHub — Content Command Center</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-logo">SH</div>
+        <div>
+          <div class="brand-name">SocialHub</div>
+          <div class="brand-tagline">Content Command Center</div>
+        </div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Collapse">&#8249;</button>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item active" data-view="calendar" onclick="navigate('calendar',this)">
+        <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
+      </a>
+      <a class="nav-item" data-view="posts" onclick="navigate('posts',this)">
+        <span class="nav-icon">📝</span><span class="nav-label">Posts</span>
+        <span class="nav-badge" id="badge-posts">0</span>
+      </a>
+      <a class="nav-item" data-view="create" onclick="navigate('create',this)">
+        <span class="nav-icon">✦</span><span class="nav-label">Create Post</span>
+      </a>
+
+      <div class="nav-section-label">Channels</div>
+      <a class="nav-item" data-view="meta" onclick="navigate('meta',this)">
+        <span class="nav-icon">📊</span><span class="nav-label">Meta Ads</span>
+      </a>
+      <a class="nav-item" data-view="whatsapp" onclick="navigate('whatsapp',this)">
+        <span class="nav-icon">💬</span><span class="nav-label">WhatsApp</span>
+      </a>
+
+      <div class="nav-section-label">Planning</div>
+      <a class="nav-item" data-view="agenda" onclick="navigate('agenda',this)">
+        <span class="nav-icon">🗂</span><span class="nav-label">Monthly Agenda</span>
+      </a>
+      <a class="nav-item" data-view="analytics" onclick="navigate('analytics',this)">
+        <span class="nav-icon">📈</span><span class="nav-label">Analytics</span>
+      </a>
+      <a class="nav-item" data-view="team" onclick="navigate('team',this)">
+        <span class="nav-icon">👥</span><span class="nav-label">Team</span>
+      </a>
+      <a class="nav-item" data-view="settings" onclick="navigate('settings',this)">
+        <span class="nav-icon">⚙</span><span class="nav-label">Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">YO</div>
+        <div class="user-info">
+          <div class="user-name">Your Brand</div>
+          <div class="user-plan">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-wrapper" id="mainWrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <h1 class="page-title" id="pageTitle">Calendar</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search posts, campaigns…" id="globalSearch" oninput="globalSearch(this.value)">
+        </div>
+        <button class="btn btn-ghost" onclick="exportData()">⬇ Export</button>
+        <button class="btn btn-primary" onclick="showModal('post')">+ New Post</button>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+    <main class="content" id="content">
+
+      <!-- CALENDAR VIEW -->
+      <div id="view-calendar" class="view active">
+        <div class="calendar-layout">
+          <div class="calendar-main">
+            <div class="cal-toolbar">
+              <div class="cal-nav">
+                <button class="btn btn-ghost btn-sm" onclick="changeMonth(-1)">‹</button>
+                <h2 class="cal-month-label" id="calMonthLabel">May 2026</h2>
+                <button class="btn btn-ghost btn-sm" onclick="changeMonth(1)">›</button>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" onclick="goToday()">Today</button>
+                <div class="view-toggle">
+                  <button class="vtbtn active" onclick="setCalView('month',this)">Month</button>
+                  <button class="vtbtn" onclick="setCalView('week',this)">Week</button>
+                </div>
+              </div>
+            </div>
+            <div class="cal-day-names">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          <div class="calendar-sidebar">
+            <div class="panel">
+              <div class="panel-title">Upcoming posts</div>
+              <div id="upcomingList" class="upcoming-list"></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="panel-title">Platform legend</div>
+              <div class="legend-chips">
+                <span class="chip chip-ig">📸 Instagram</span>
+                <span class="chip chip-fb">📘 Facebook</span>
+                <span class="chip chip-wa">💬 WhatsApp</span>
+                <span class="chip chip-meta">📊 Meta Ad</span>
+                <span class="chip chip-tw">🐦 Twitter/X</span>
+                <span class="chip chip-li">💼 LinkedIn</span>
+              </div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="panel-title">Quick add</div>
+              <input class="form-input" id="quickPostTitle" placeholder="Post title…" style="margin-bottom:8px">
+              <input class="form-input" type="date" id="quickPostDate" style="margin-bottom:8px">
+              <select class="form-select" id="quickPostPlatform" style="margin-bottom:8px">
+                <option value="Instagram">📸 Instagram</option>
+                <option value="Facebook">📘 Facebook</option>
+                <option value="WhatsApp">💬 WhatsApp</option>
+                <option value="Twitter/X">🐦 Twitter/X</option>
+                <option value="LinkedIn">💼 LinkedIn</option>
+                <option value="Meta Ad">📊 Meta Ad</option>
+              </select>
+              <button class="btn btn-primary" style="width:100%" onclick="quickAdd()">Add to calendar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POSTS VIEW -->
+      <div id="view-posts" class="view">
+        <div class="posts-toolbar">
+          <div class="filter-tabs" id="postFilterTabs">
+            <button class="ftab active" onclick="filterPosts('all',this)">All</button>
+            <button class="ftab" onclick="filterPosts('draft',this)">Drafts</button>
+            <button class="ftab" onclick="filterPosts('scheduled',this)">Scheduled</button>
+            <button class="ftab" onclick="filterPosts('review',this)">In Review</button>
+            <button class="ftab" onclick="filterPosts('published',this)">Published</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <select class="form-select form-select-sm" onchange="sortPosts(this.value)">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="platform">By platform</option>
+            </select>
+            <div class="view-toggle">
+              <button class="vtbtn active" onclick="setPostView('list',this)">☰</button>
+              <button class="vtbtn" onclick="setPostView('grid',this)">⊞</button>
+            </div>
+          </div>
+        </div>
+        <div id="postsList" class="posts-list"></div>
+      </div>
+
+      <!-- CREATE POST VIEW -->
+      <div id="view-create" class="view">
+        <div class="create-layout">
+          <div class="create-form-panel">
+            <div class="form-section">
+              <div class="form-section-title">Post details</div>
+              <div class="form-group">
+                <label class="form-label">Title <span class="required">*</span></label>
+                <input class="form-input" id="createTitle" placeholder="Internal reference title">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Caption / Copy <span class="required">*</span></label>
+                <div class="caption-toolbar">
+                  <button class="cap-btn" onclick="insertEmoji('😊')">😊</button>
+                  <button class="cap-btn" onclick="insertEmoji('🔥')">🔥</button>
+                  <button class="cap-btn" onclick="insertEmoji('✨')">✨</button>
+                  <button class="cap-btn" onclick="insertEmoji('🎉')">🎉</button>
+                  <button class="cap-btn" onclick="insertEmoji('👇')">👇</button>
+                  <button class="cap-btn" onclick="insertEmoji('💯')">💯</button>
+                  <span class="cap-sep">|</span>
+                  <span class="char-count" id="charCount">0 / 2200</span>
+                </div>
+                <textarea class="form-input form-textarea" id="createCaption" placeholder="Write your caption…" oninput="onCaptionInput(this)" maxlength="2200"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hashtags</label>
+                <input class="form-input" id="createHashtags" placeholder="#summer #sale #fashion" oninput="updatePreview()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Creative brief / Description</label>
+                <textarea class="form-input" id="createBrief" rows="3" placeholder="Describe the visual, tone, goal…"></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Platforms</div>
+              <div class="platform-grid" id="platformGrid">
+                <div class="pcheck" data-platform="Instagram" onclick="togglePlatform(this)"><span>📸</span> Instagram</div>
+                <div class="pcheck" data-platform="Facebook" onclick="togglePlatform(this)"><span>📘</span> Facebook</div>
+                <div class="pcheck" data-platform="WhatsApp" onclick="togglePlatform(this)"><span>💬</span> WhatsApp</div>
+                <div class="pcheck" data-platform="Twitter/X" onclick="togglePlatform(this)"><span>🐦</span> Twitter/X</div>
+                <div class="pcheck" data-platform="LinkedIn" onclick="togglePlatform(this)"><span>💼</span> LinkedIn</div>
+                <div class="pcheck" data-platform="Meta Ad" onclick="togglePlatform(this)"><span>📊</span> Meta Ad</div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Scheduling</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input class="form-input" type="date" id="createDate">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Time</label>
+                  <input class="form-input" type="time" id="createTime" value="09:00">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Post type</label>
+                  <select class="form-select" id="createType">
+                    <option>Image post</option>
+                    <option>Video / Reel</option>
+                    <option>Carousel</option>
+                    <option>Story</option>
+                    <option>Text only</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Status</label>
+                  <select class="form-select" id="createStatus">
+                    <option value="draft">Draft</option>
+                    <option value="review">In review</option>
+                    <option value="scheduled">Scheduled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Team</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Assign to</label>
+                  <select class="form-select" id="createAssign">
+                    <option value="">— unassigned —</option>
+                    <option>Priya Sharma</option>
+                    <option>Arjun Mehta</option>
+                    <option>Neha Gupta</option>
+                    <option>Rahul Das</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Priority</label>
+                  <select class="form-select" id="createPriority">
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Notes for team</label>
+                <textarea class="form-input" id="createNotes" rows="2" placeholder="Any additional instructions for the team…"></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+              <button class="btn btn-ghost" onclick="saveDraft()">Save draft</button>
+              <button class="btn btn-primary" onclick="savePost()">Save & schedule</button>
+            </div>
+          </div>
+
+          <div class="create-right-panel">
+            <div class="panel">
+              <div class="panel-title">Preview</div>
+              <div class="preview-platform-tabs">
+                <button class="pvtab active" onclick="setPreviewPlatform('instagram',this)">IG</button>
+                <button class="pvtab" onclick="setPreviewPlatform('facebook',this)">FB</button>
+                <button class="pvtab" onclick="setPreviewPlatform('twitter',this)">TW</button>
+              </div>
+              <div class="post-preview" id="postPreview">
+                <div class="preview-header-mock">
+                  <div class="preview-avatar">YB</div>
+                  <div>
+                    <div class="preview-username">@yourbrand</div>
+                    <div class="preview-time">Just now</div>
+                  </div>
+                </div>
+                <div class="preview-image-placeholder">📷 Add image</div>
+                <div class="preview-caption-text" id="previewCaptionText">Your caption will appear here…</div>
+              </div>
+            </div>
+
+            <div class="panel" style="margin-top:12px">
+              <div class="panel-title">Share with team</div>
+              <div id="teamShareList" class="team-share-list"></div>
+            </div>
+
+            <div class="panel" style="margin-top:12px">
+              <div class="panel-title">Media</div>
+              <div class="upload-zone" onclick="document.getElementById('mediaInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click to upload image / video</div>
+                <div class="upload-sub">PNG, JPG, MP4 up to 50MB</div>
+                <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none" onchange="handleMedia(this)">
+              </div>
+              <div id="mediaPreview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- META ADS VIEW -->
+      <div id="view-meta" class="view">
+        <div class="meta-stats-row" id="metaStatsRow"></div>
+        <div class="meta-toolbar">
+          <h3 class="section-title">Active campaigns</h3>
+          <button class="btn btn-primary" onclick="showModal('ad')">+ New campaign</button>
+        </div>
+        <div class="ads-grid" id="adsGrid"></div>
+      </div>
+
+      <!-- WHATSAPP VIEW -->
+      <div id="view-whatsapp" class="view">
+        <div class="wa-layout">
+          <div class="wa-sidebar">
+            <div class="wa-sidebar-header">
+              <input class="form-input" placeholder="Search contacts…" oninput="filterWAContacts(this.value)">
+              <button class="btn btn-primary btn-sm" onclick="showModal('contact')" style="margin-top:8px;width:100%">+ New contact / group</button>
+            </div>
+            <div id="waContactList" class="wa-contact-list"></div>
+          </div>
+          <div class="wa-main">
+            <div class="wa-chat-header" id="waChatHeader">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="wa-avatar" id="waActiveAvatar">CG</div>
+                <div>
+                  <div class="wa-chat-name" id="waActiveName">Customers Group</div>
+                  <div class="wa-chat-sub" id="waActiveSub">324 members</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" onclick="showModal('broadcast')">📣 Broadcast</button>
+                <button class="btn btn-ghost btn-sm" onclick="showModal('schedule-wa')">🕐 Schedule</button>
+              </div>
+            </div>
+            <div class="wa-messages" id="waMessages"></div>
+            <div class="wa-templates">
+              <div class="template-label">Quick templates:</div>
+              <div class="template-chips">
+                <span class="tpl-chip" onclick="useTemplate('sale')">🎉 Sale</span>
+                <span class="tpl-chip" onclick="useTemplate('welcome')">👋 Welcome</span>
+                <span class="tpl-chip" onclick="useTemplate('followup')">🔄 Follow-up</span>
+                <span class="tpl-chip" onclick="useTemplate('event')">📅 Event</span>
+                <span class="tpl-chip" onclick="useTemplate('feedback')">⭐ Feedback</span>
+                <span class="tpl-chip" onclick="useTemplate('offer')">💸 Offer</span>
+              </div>
+            </div>
+            <div class="wa-input-row">
+              <button class="btn btn-ghost btn-sm" onclick="attachWAFile()">📎</button>
+              <textarea class="wa-input" id="waInput" placeholder="Type a message…" rows="1" onkeydown="waKeyHandler(event)"></textarea>
+              <button class="btn btn-ghost btn-sm" onclick="showModal('schedule-wa')">🕐</button>
+              <button class="btn btn-primary" onclick="sendWAMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENDA VIEW -->
+      <div id="view-agenda" class="view">
+        <div class="agenda-layout">
+          <div class="agenda-main">
+            <div class="agenda-month-header">
+              <h2 class="agenda-month-title" id="agendaMonthTitle">May 2026 — Monthly Plan</h2>
+              <button class="btn btn-primary" onclick="showModal('agenda-item')">+ Add item</button>
+            </div>
+
+            <div class="agenda-section-title">Monthly Goals</div>
+            <div id="goalsList" class="goals-list"></div>
+            <button class="btn btn-ghost btn-sm" onclick="showModal('goal')" style="margin-top:8px">+ Add goal</button>
+
+            <div class="agenda-section-title" style="margin-top:24px">Content themes this month</div>
+            <div class="theme-chips" id="themeChips">
+              <span class="theme-chip">🌞 Summer vibes</span>
+              <span class="theme-chip">💰 Sale & offers</span>
+              <span class="theme-chip">🎨 Behind the scenes</span>
+              <span class="theme-chip">👥 Community</span>
+              <button class="theme-chip theme-add" onclick="addTheme()">+ Add theme</button>
+            </div>
+
+            <div class="agenda-section-title" style="margin-top:24px">Key events & deadlines</div>
+            <div id="eventsList" class="events-list"></div>
+          </div>
+          <div class="agenda-sidebar">
+            <div class="panel">
+              <div class="panel-title">Timeline</div>
+              <div id="agendaTimeline" class="timeline"></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="panel-title">Notes</div>
+              <textarea class="form-input" id="monthNotes" rows="6" placeholder="Monthly strategy notes, reminders, ideas…" oninput="saveNotes(this.value)"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS VIEW -->
+      <div id="view-analytics" class="view">
+        <div class="analytics-stats" id="analyticsStats"></div>
+        <div class="analytics-grid">
+          <div class="analytics-chart-card">
+            <div class="chart-title">Posts by platform</div>
+            <canvas id="platformChart" width="400" height="220"></canvas>
+          </div>
+          <div class="analytics-chart-card">
+            <div class="chart-title">Posts by status</div>
+            <canvas id="statusChart" width="400" height="220"></canvas>
+          </div>
+          <div class="analytics-chart-card" style="grid-column:1/-1">
+            <div class="chart-title">Posts published over time</div>
+            <canvas id="timelineChart" width="800" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM VIEW -->
+      <div id="view-team" class="view">
+        <div class="team-toolbar">
+          <h3 class="section-title">Team members</h3>
+          <button class="btn btn-primary" onclick="showModal('member')">+ Invite member</button>
+        </div>
+        <div class="team-grid" id="teamGrid"></div>
+        <div class="section-title" style="margin-top:24px;margin-bottom:12px">Post assignment overview</div>
+        <div id="assignmentTable"></div>
+      </div>
+
+      <!-- SETTINGS VIEW -->
+      <div id="view-settings" class="view">
+        <div class="settings-layout">
+          <div class="settings-nav">
+            <div class="snav-item active" onclick="setSettingsTab('profile',this)">Profile</div>
+            <div class="snav-item" onclick="setSettingsTab('platforms',this)">Connected platforms</div>
+            <div class="snav-item" onclick="setSettingsTab('notifications',this)">Notifications</div>
+            <div class="snav-item" onclick="setSettingsTab('team-settings',this)">Team & permissions</div>
+            <div class="snav-item" onclick="setSettingsTab('data',this)">Data & export</div>
+          </div>
+          <div class="settings-content">
+            <div id="stab-profile" class="stab active">
+              <div class="settings-section-title">Brand profile</div>
+              <div class="form-group"><label class="form-label">Brand name</label><input class="form-input" id="sBrandName" value="Your Brand"></div>
+              <div class="form-group"><label class="form-label">Industry</label>
+                <select class="form-select" id="sIndustry">
+                  <option>Fashion & Apparel</option><option>Food & Beverage</option><option>Tech</option><option>Health & Wellness</option><option>Education</option><option>Real Estate</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Timezone</label>
+                <select class="form-select" id="sTimezone">
+                  <option>Asia/Kolkata (IST)</option><option>UTC</option><option>America/New_York</option><option>Europe/London</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Default post time</label><input class="form-input" type="time" id="sDefaultTime" value="09:00"></div>
+              <div class="form-group"><label class="form-label">Posting frequency</label>
+                <select class="form-select">
+                  <option>Daily</option><option>3× per week</option><option>Weekdays only</option><option>Custom</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="saveSettings()">Save profile</button>
+            </div>
+
+            <div id="stab-platforms" class="stab">
+              <div class="settings-section-title">Connected platforms</div>
+              <div class="platform-connections" id="platformConnections"></div>
+            </div>
+
+            <div id="stab-notifications" class="stab">
+              <div class="settings-section-title">Notification preferences</div>
+              <div class="notif-row"><div><div class="notif-label">Post scheduled reminder</div><div class="notif-sub">Get notified 1 hour before a post goes live</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="notif-row"><div><div class="notif-label">Draft awaiting review</div><div class="notif-sub">When a team member submits a draft for review</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="notif-row"><div><div class="notif-label">Campaign budget alert</div><div class="notif-sub">When a Meta Ad campaign reaches 80% of budget</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+              <div class="notif-row"><div><div class="notif-label">WhatsApp reply</div><div class="notif-sub">When someone replies to a broadcast</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+              <div class="notif-row"><div><div class="notif-label">Weekly performance report</div><div class="notif-sub">Every Monday at 9am</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+            </div>
+
+            <div id="stab-team-settings" class="stab">
+              <div class="settings-section-title">Roles & permissions</div>
+              <div class="roles-table" id="rolesTable"></div>
+            </div>
+
+            <div id="stab-data" class="stab">
+              <div class="settings-section-title">Data & export</div>
+              <div class="export-options">
+                <div class="export-card" onclick="exportPosts('json')"><div class="export-icon">📄</div><div class="export-label">Export posts (JSON)</div><div class="export-sub">All posts, captions, metadata</div></div>
+                <div class="export-card" onclick="exportPosts('csv')"><div class="export-icon">📊</div><div class="export-label">Export calendar (CSV)</div><div class="export-sub">Spreadsheet-friendly format</div></div>
+                <div class="export-card" onclick="exportPosts('pdf')"><div class="export-icon">📑</div><div class="export-label">Content report (PDF)</div><div class="export-sub">Monthly overview report</div></div>
+              </div>
+              <div style="margin-top:24px">
+                <div class="settings-section-title" style="color:var(--red)">Danger zone</div>
+                <button class="btn" style="border-color:var(--red);color:var(--red)" onclick="clearAllData()">Clear all data</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">New Post</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/posts.js"></script>
+<script src="js/meta.js"></script>
+<script src="js/whatsapp.js"></script>
+<script src="js/agenda.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/team.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>
